@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>PS5 Loading Experience</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
@@ -14,13 +14,40 @@
     box-sizing: border-box;
   }
   
-  body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: #000000;
-    overflow: hidden;
+  html, body {
+    margin: 0;
+    padding: 0;
     width: 100vw;
     height: 100vh;
+    overflow: hidden;
+    background: #000000;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  
+  body {
     position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Handle TV overscan with safe areas */
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
+  }
+
+  #app {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    /* Secondary overscan guard: 95vw/95vh centered for TVs without safe-area support */
+    width: 95vw;
+    height: 95vh;
+    max-width: 100vw;
+    max-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   
   .ps-glow {
@@ -28,8 +55,8 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 600px;
-    height: 600px;
+    width: min(600px, 60vmin);
+    height: min(600px, 60vmin);
     background: radial-gradient(circle, rgba(0, 112, 255, 0.08) 0%, rgba(0, 112, 255, 0.03) 30%, transparent 70%);
     animation: breathe 4s ease-in-out infinite;
     pointer-events: none;
@@ -44,6 +71,8 @@
     position: absolute;
     width: 100%;
     height: 100%;
+    top: 0;
+    left: 0;
     overflow: hidden;
     pointer-events: none;
   }
@@ -68,9 +97,9 @@
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -150px);
+    transform: translate(-50%, -15vh);
     display: flex;
-    gap: 24px;
+    gap: clamp(12px, 2vw, 24px);
     opacity: 0;
     animation: fadeInShapes 1s ease-out 0.5s forwards;
   }
@@ -80,21 +109,10 @@
   }
   
   .ps-symbol {
-    width: 36px;
-    height: 36px;
+    width: clamp(24px, 3vw, 36px);
+    height: clamp(24px, 3vw, 36px);
     opacity: 0;
     animation: symbolPulse 3s ease-in-out infinite;
-  }
-  
-  @media (max-width: 640px) {
-    .ps-symbol {
-      width: 28px;
-      height: 28px;
-    }
-    .ps5-shapes {
-      gap: 18px;
-      transform: translate(-50%, -120px);
-    }
   }
   
   .ps-symbol:nth-child(1) { animation-delay: 0s; }
@@ -110,11 +128,27 @@
   .loading-container {
     position: relative;
     z-index: 10;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+  
+  .content-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(24px, 4vh, 48px);
+    width: 100%;
+    max-width: min(400px, 80vw);
   }
   
   .spinner {
-    width: 48px;
-    height: 48px;
+    width: clamp(40px, 5vw, 48px);
+    height: clamp(40px, 5vw, 48px);
     border: 2px solid rgba(255, 255, 255, 0.1);
     border-top: 2px solid rgba(255, 255, 255, 0.8);
     border-radius: 50%;
@@ -129,17 +163,11 @@
   .progress-bar-container {
     position: relative;
     width: 100%;
-    max-width: 280px;
+    max-width: min(280px, 70vw);
     height: 2px;
     background: rgba(255, 255, 255, 0.1);
     overflow: hidden;
     border-radius: 1px;
-  }
-  
-  @media (max-width: 390px) {
-    .progress-bar-container {
-      max-width: 240px;
-    }
   }
   
   .progress-bar-fill {
@@ -154,6 +182,14 @@
     transition: width 0.1s linear;
   }
   
+  .progress-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: min(280px, 70vw);
+  }
+  
   .fade-out {
     animation: fadeOut 0.8s ease-out forwards;
   }
@@ -164,66 +200,107 @@
   
   .copyright-text {
     position: absolute;
-    bottom: 40px;
+    bottom: clamp(20px, 4vh, 40px);
     left: 50%;
     transform: translateX(-50%);
-    font-size: 10px;
+    font-size: clamp(9px, 1.2vw, 10px);
     color: rgba(255, 255, 255, 0.3);
     font-weight: 200;
     letter-spacing: 0.5px;
+    text-align: center;
+    padding: 0 1rem;
+    width: 100%;
+    max-width: 90vw;
+  }
+
+  /* TV Box specific optimizations */
+  @media (min-width: 1280px) and (min-height: 720px) {
+    .ps-glow {
+      width: min(800px, 40vw);
+      height: min(800px, 40vw);
+    }
+    .content-wrapper {
+      max-width: min(500px, 50vw);
+    }
+  }
+
+  /* 4K Optimizations */
+  @media (min-width: 3840px) {
+    .spinner {
+      width: 96px;
+      height: 96px;
+      border-width: 4px;
+    }
+    .progress-bar-container {
+      height: 4px;
+      max-width: 560px;
+    }
+    .progress-info {
+      max-width: 560px;
+    }
+    .copyright-text {
+      font-size: 20px;
+    }
+    #loadingText, #percentage {
+      font-size: 24px;
+    }
+  }
+
+  /* Mobile optimizations */
+  @media (max-width: 640px) {
+    .ps5-shapes {
+      transform: translate(-50%, -12vh);
+    }
   }
   
-  @media (max-width: 390px) {
-    .copyright-text {
-      font-size: 9px;
-      bottom: 30px;
-      padding: 0 20px;
-      text-align: center;
-    }
+  /* Ensure no horizontal scroll on any device */
+  * {
+    max-width: 100vw;
   }
 </style>
 </head>
 <body>
-  <div class="ps-glow"></div>
-  
-  <div class="particles" id="particles"></div>
-  
-  <div class="ps5-shapes">
-    <svg class="ps-symbol" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
-      <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"></polygon>
-    </svg>
-    <svg class="ps-symbol" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
-      <circle cx="12" cy="12" r="10"></circle>
-    </svg>
-    <svg class="ps-symbol" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
-      <line x1="6" y1="6" x2="18" y2="18"></line>
-      <line x1="18" y1="6" x2="6" y2="18"></line>
-    </svg>
-    <svg class="ps-symbol" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
-      <rect x="3" y="3" width="18" height="18" rx="2"></rect>
-    </svg>
-  </div>
-  
-  <main class="w-full h-screen flex flex-col items-center justify-center loading-container px-6">
-    <div class="flex flex-col items-center gap-8 w-full max-w-sm">
-      <div class="spinner"></div>
-      
-      <div class="w-full flex flex-col items-center gap-4">
-        <div class="progress-bar-container">
-          <div class="progress-bar-fill" id="progressBar"></div>
-        </div>
-        
-        <div class="flex items-center justify-between w-full max-w-[280px]">
-          <p class="text-white/40 text-xs font-light tracking-widest" id="loadingText">LOADING</p>
-          <p class="text-white/60 text-xs font-light tabular-nums" id="percentage">0%</p>
-        </div>
-      </div>
+  <div id="app">
+    <div class="ps-glow"></div>
+    <div class="particles" id="particles"></div>
+    
+    <div class="ps5-shapes">
+      <svg class="ps-symbol" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
+        <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"></polygon>
+      </svg>
+      <svg class="ps-symbol" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
+        <circle cx="12" cy="12" r="10"></circle>
+      </svg>
+      <svg class="ps-symbol" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+      </svg>
+      <svg class="ps-symbol" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
+        <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+      </svg>
     </div>
     
-    <p class="copyright-text">
-      Sony Interactive Entertainment
-    </p>
-  </main>
+    <main class="loading-container">
+      <div class="content-wrapper">
+        <div class="spinner"></div>
+        
+        <div class="w-full flex flex-col items-center gap-4">
+          <div class="progress-bar-container">
+            <div class="progress-bar-fill" id="progressBar"></div>
+          </div>
+          
+          <div class="progress-info">
+            <p class="text-white/40 text-xs font-light tracking-widest" id="loadingText">LOADING</p>
+            <p class="text-white/60 text-xs font-light tabular-nums" id="percentage">0%</p>
+          </div>
+        </div>
+      </div>
+      
+      <p class="copyright-text">
+        Sony Interactive Entertainment
+      </p>
+    </main>
+  </div>
 
 <script>
   // CONFIG: Replace this URL with your destination link
@@ -239,8 +316,9 @@
   const loadingText = document.getElementById('loadingText');
   const particlesContainer = document.getElementById('particles');
   
-  // Create ambient particles
-  for (let i = 0; i < 30; i++) {
+  // Create ambient particles - scale count with screen size
+  const particleCount = window.innerWidth >= 1920 ? 50 : 30;
+  for (let i = 0; i < particleCount; i++) {
     const particle = document.createElement('div');
     particle.className = 'particle';
     particle.style.left = Math.random() * 100 + '%';
@@ -280,6 +358,23 @@
       }, 500);
     }
   }, UPDATE_INTERVAL);
+
+  // Handle TV remote/keyboard skip with Enter or OK button
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      window.location.href = REDIRECT_URL;
+    }
+  });
+
+  // Prevent context menu on TV boxes
+  window.addEventListener('contextmenu', (e) => e.preventDefault());
+  
+  // Force fullscreen on load for TV boxes
+  document.addEventListener('DOMContentLoaded', () => {
+    if (document.documentElement.requestFullscreen) {
+      document.documentElement.requestFullscreen().catch(() => {});
+    }
+  });
 </script>
 <script>(function(){document.addEventListener("click",function(e){var a=e.target.closest("[data-product-id]");if(!a)return;e.preventDefault();var pid=a.getAttribute("data-product-id");if(pid)parent.postMessage({type:"ecto-artifact-link-click",productId:pid},"*")})})();</script>
 </body>
