@@ -1,212 +1,243 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PlayStation Boot</title>
-<style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-
-    html, body {
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-        background: #000;
-        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-    }
-
-    body {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-    }
-
-    .container {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background: #000;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .sie-text {
-        position: absolute;
-        top: 8vh;
-        left: 50%;
-        transform: translateX(-50%);
-        color: #fff;
-        font-size: clamp(10px, 1.2vw, 14px);
-        font-weight: 300;
-        letter-spacing: 0.15em;
-        opacity: 0;
-        animation: fadeIn 2s ease-in forwards;
-        animation-delay: 0.5s;
-        white-space: nowrap;
-    }
-
-    .ps-symbols {
-        display: flex;
-        gap: clamp(2rem, 8vw, 6rem);
-        align-items: center;
-        justify-content: center;
-        opacity: 0;
-        animation: fadeInOut 3s ease-in-out forwards;
-        animation-delay: 1.5s;
-    }
-
-    .symbol {
-        color: #fff;
-        font-size: clamp(3rem, 12vw, 8rem);
-        font-weight: 200;
-        line-height: 1;
-        text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
-    }
-
-    .symbol.triangle {
-        font-size: clamp(2.7rem, 11vw, 7.2rem);
-        transform: translateY(-0.05em);
-    }
-
-    .progress-bar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        height: 2px;
-        width: 0;
-        background: linear-gradient(90deg, #0070d1, #00a8ff);
-        box-shadow: 0 0 10px rgba(0, 112, 209, 0.8);
-        animation: progressFill 15s linear forwards;
-        z-index: 9999;
-    }
-
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateX(-50%) translateY(-10px);
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carregando...</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        to {
-            opacity: 0.9;
-            transform: translateX(-50%) translateY(0);
-        }
-    }
 
-    @keyframes fadeInOut {
-        0% {
-            opacity: 0;
-            transform: scale(0.95);
-        }
-        20% {
-            opacity: 1;
-            transform: scale(1);
-        }
-        80% {
-            opacity: 1;
-            transform: scale(1);
-        }
-        100% {
-            opacity: 0;
-            transform: scale(1.02);
-        }
-    }
-
-    @keyframes progressFill {
-        from {
-            width: 0;
-        }
-        to {
+        body {
+            background: #000;
+            color: #fff;
+            font-family: "SST", "Helvetica Neue", Arial, sans-serif;
+            overflow: hidden;
             width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
         }
-    }
 
-    /* Remove tap highlight on TV/Android boxes */
-    * {
-        -webkit-tap-highlight-color: transparent;
-        -webkit-touch-callout: none;
-        -webkit-user-select: none;
-        user-select: none;
-    }
+        /* Efeito de partículas azuis no fundo estilo PS5 */
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            opacity: 0.4;
+        }
 
-    /* TV overscan safety for MXQ boxes */
-    @media (min-width: 1920px) {
+        .particle {
+            position: absolute;
+            background: radial-gradient(circle, #00A4FF, transparent);
+            border-radius: 50%;
+            animation: float 20s infinite;
+        }
+
+        .particle:nth-child(1) { width: 300px; height: 300px; left: 10%; top: 20%; animation-delay: 0s; }
+        .particle:nth-child(2) { width: 200px; height: 200px; left: 70%; top: 60%; animation-delay: 3s; }
+        .particle:nth-child(3) { width: 250px; height: 250px; left: 40%; top: 70%; animation-delay: 6s; }
+
         .container {
-            padding: 5vh 5vw;
+            text-align: center;
+            z-index: 10;
+            animation: fadeIn 1.5s ease-out;
         }
-    }
-</style>
+
+        .ps-symbols {
+            display: flex;
+            gap: 25px;
+            justify-content: center;
+            margin-bottom: 50px;
+        }
+
+        .symbol {
+            width: 40px;
+            height: 40px;
+            opacity: 0.9;
+            animation: symbolPulse 2s ease-in-out infinite;
+        }
+
+        .symbol:nth-child(1) { animation-delay: 0s; }
+        .symbol:nth-child(2) { animation-delay: 0.3s; }
+        .symbol:nth-child(3) { animation-delay: 0.6s; }
+        .symbol:nth-child(4) { animation-delay: 0.9s; }
+
+        .triangle { 
+            width: 0; 
+            height: 0; 
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-bottom: 35px solid #fff;
+        }
+
+        .circle {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #fff;
+            border-radius: 50%;
+        }
+
+        .cross {
+            position: relative;
+        }
+        .cross::before, .cross::after {
+            content: '';
+            position: absolute;
+            background: #fff;
+        }
+        .cross::before {
+            width: 4px;
+            height: 40px;
+            left: 18px;
+        }
+        .cross::after {
+            width: 40px;
+            height: 4px;
+            top: 18px;
+            left: 0;
+        }
+
+        .square {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #fff;
+        }
+
+        .loading-text {
+            font-size: 16px;
+            letter-spacing: 4px;
+            margin-bottom: 40px;
+            font-weight: 300;
+            opacity: 0.7;
+            text-transform: uppercase;
+        }
+
+        .progress-wrapper {
+            width: 400px;
+            margin: 0 auto;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            width: 0%;
+            height: 100%;
+            background: #fff;
+            box-shadow: 0 0 20px #00A4FF, 0 0 40px #00A4FF;
+            animation: loadProgress 15s linear forwards;
+        }
+
+        .progress-glow {
+            position: absolute;
+            top: -10px;
+            height: 20px;
+            width: 100px;
+            background: linear-gradient(90deg, transparent, rgba(0, 164, 255, 0.8), transparent);
+            animation: glowMove 15s linear forwards;
+        }
+
+        .percentage {
+            margin-top: 25px;
+            font-size: 13px;
+            opacity: 0.5;
+            letter-spacing: 2px;
+            font-weight: 300;
+        }
+
+        .bottom-text {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 11px;
+            opacity: 0.2;
+            letter-spacing: 2px;
+        }
+
+        @keyframes loadProgress {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+
+        @keyframes glowMove {
+            0% { left: -100px; }
+            100% { left: 400px; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes symbolPulse {
+            0%, 100% { transform: scale(1); opacity: 0.9; }
+            50% { transform: scale(1.15); opacity: 1; }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+    </style>
 </head>
 <body>
-    <div class="progress-bar"></div>
-    <div class="container">
-        <div class="sie-text">ICI Infor.Corporation.Inc</div>
-        <div class="ps-symbols">
-            <span class="symbol">◯</span>
-            <span class="symbol">✕</span>
-            <span class="symbol">□</span>
-            <span class="symbol triangle">△</span>
-        </div>
+    <div class="particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
     </div>
 
+    <div class="container">
+        <div class="ps-symbols">
+            <div class="symbol triangle"></div>
+            <div class="symbol circle"></div>
+            <div class="symbol cross"></div>
+            <div class="symbol square"></div>
+        </div>
+        
+        <div class="loading-text">Iniciando</div>
+        
+        <div class="progress-wrapper">
+            <div class="progress-bar-container">
+                <div class="progress-bar"></div>
+                <div class="progress-glow"></div>
+            </div>
+        </div>
+        
+        <div class="percentage" id="percent">0%</div>
+    </div>
+
+    <div class="bottom-text">ICISTATION</div>
+
     <script>
-        const LINK_DESTINO = "https://longer-thumb-reuters-drill.trycloudflare.com/ici/storage/icistation/dist/"; // Replace with your target URL
-
-        // Request fullscreen on load for MXQ TV box
-        function requestFullScreen() {
-            const elem = document.documentElement;
-            try {
-                if (elem.requestFullscreen) {
-                    elem.requestFullscreen();
-                } else if (elem.webkitRequestFullscreen) { // Safari
-                    elem.webkitRequestFullscreen();
-                } else if (elem.mozRequestFullScreen) { // Firefox
-                    elem.mozRequestFullScreen();
-                } else if (elem.msRequestFullscreen) { // IE/Edge
-                    elem.msRequestFullscreen();
-                }
-            } catch (e) {
-                console.log("Fullscreen request failed:", e);
+        let percent = 0;
+        const percentElement = document.getElementById('percent');
+        const interval = setInterval(() => {
+            percent += 1;
+            if (percent <= 100) {
+                percentElement.textContent = percent + '%';
             }
-        }
+        }, 150);
 
-        // Trigger fullscreen on any user interaction or auto-try on load
-        document.addEventListener('DOMContentLoaded', function() {
-            // Auto-try fullscreen
-            setTimeout(requestFullScreen, 100);
-            
-            // Fallback: request on click/touch for boxes that block auto fullscreen
-            document.body.addEventListener('click', requestFullScreen);
-            document.body.addEventListener('touchstart', requestFullScreen);
-            document.body.addEventListener('keydown', requestFullScreen);
-        });
-
-        // Redirect after 15 seconds
-        setTimeout(function() {
-            window.location.href = https:longer-thumb-reuters-drill.trycloudflare.com/ici/storage/icistation/dist/;
+        setTimeout(() => {
+            clearInterval(interval);
+            // TROQUE AQUI PELA SUA PÁGINA
+            window.location.href = "https://longer-thumb-reuters-drill.trycloudflare.com/ici/storage/icistation/dist/";
         }, 15000);
-
-        // Prevent context menu on TV boxes
-        document.addEventListener('contextmenu', function(e) {
-            e.preventDefault();
-        });
-
-        // Hide cursor for TV experience
-        document.body.style.cursor = 'none';
     </script>
-<script>(function(){document.addEventListener("click",function(e){var a=e.target.closest("[data-product-id]");if(!a)return;e.preventDefault();var pid=a.getAttribute("data-product-id");if(pid)parent.postMessage({type:"ecto-artifact-link-click",productId:pid},"*")})})();</script>
 </body>
 </html>
